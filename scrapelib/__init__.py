@@ -4,7 +4,8 @@ import sys
 import tempfile
 import time
 import warnings
-
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 import requests
 from .cache import CachingSession, FileCache
 
@@ -441,6 +442,7 @@ class Scraper(RobotsTxtSession,    # first, check robots.txt
                             retry_on_404=retry_on_404)
 
         if self.raise_errors and not self.accept_response(resp):
+            pp.pprint (resp)            
             raise HTTPError(resp)
         else:
             return ResultStr(self, resp, url)
