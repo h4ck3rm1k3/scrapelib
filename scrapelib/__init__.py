@@ -8,6 +8,7 @@ import pprint
 pp = pprint.PrettyPrinter(indent=4)
 import requests
 from .cache import CachingSession, FileCache
+import traceback
 
 # for backwards-compatibility w/ scrapelib <= 0.6
 Headers = requests.structures.CaseInsensitiveDict
@@ -31,12 +32,15 @@ __version__ = '0.7.3'
 _user_agent = 'scrapelib {0}'.format(__version__)
 
 
-class NullHandler(logging.Handler):
-    def emit(self, record):
-        pass
-
+###
 _log = logging.getLogger('scrapelib')
-_log.addHandler(NullHandler())
+h = logging.StreamHandler()
+f = logging.Formatter("scraperlib: %(pathname)s %(levelname)s %(asctime)s %(funcName)s %(lineno)d %(message)s")
+h.setFormatter(f)
+_log.addHandler(h)
+
+
+
 
 
 class RobotExclusionError(requests.RequestException):
@@ -84,6 +88,7 @@ class FTPError(requests.HTTPError):
 
 class ErrorManager(object):     # pragma: no cover
     def __enter__(self):
+        traceback.print_stack();
         warnings.warn('with urlopen(): support is deprecated as of '
                       'scrapelib 0.7', DeprecationWarning)
         return self
@@ -109,6 +114,11 @@ class ResultStr(_str_type, ErrorManager):
         self.bytes = response.content
         self.encoding = response.encoding
         self.response = response
+
+        _log.debug("response encoding:%s" % response.encoding)
+        _log.debug("response body:%s" % self.bytes)
+
+
         # augment self.response
         #   manually set: requested_url
         #   aliases: code -> status_code
@@ -440,6 +450,22 @@ class Scraper(RobotsTxtSession,    # first, check robots.txt
                             data=body, headers=headers,
                             allow_redirects=self.follow_redirects,
                             retry_on_404=retry_on_404)
+
+#         _log.debug("resp :%s" % resp)
+#result.bytes
+#         _log.debug("resp raw :%s" % resp.raw)
+#        _log.debug("resp raw body:%s" % resp.raw._body)
+#        _log.debug("resp body:%s" % resp.content)
+#        _log.debug("resp body en:%s" % resp.encoding)
+
+        
+
+# #        _log.debug(resp.state_code)
+# #        _log.debug(resp.headers)
+# #        _log.debug(resp.cookies)
+#         _log.debug("resp error:%s" % resp.error)
+#         _log.debug("resp url:%s" %  resp.url)
+
 
         if self.raise_errors and not self.accept_response(resp):
             pp.pprint (resp)            
