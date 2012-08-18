@@ -33,11 +33,12 @@ _user_agent = 'scrapelib {0}'.format(__version__)
 
 
 ###
-_log = logging.getLogger('scrapelib')
-h = logging.StreamHandler()
-f = logging.Formatter("scraperlib: %(pathname)s %(levelname)s %(asctime)s %(funcName)s %(lineno)d %(message)s")
-h.setFormatter(f)
-_log.addHandler(h)
+# billy or the test driver will log the messages
+_log = logging.getLogger('billy')
+# h = logging.StreamHandler()
+# f = logging.Formatter("scraperlib: %(pathname)s %(levelname)s %(asctime)s %(funcName)s %(lineno)d %(message)s")
+# h.setFormatter(f)
+# _log.addHandler(h)
 
 
 
@@ -115,8 +116,10 @@ class ResultStr(_str_type, ErrorManager):
         self.encoding = response.encoding
         self.response = response
 
-        _log.debug("response encoding:%s" % response.encoding)
-        _log.debug("response body:%s" % self.bytes)
+#        _log.debug("response encoding:%s" % response.encoding)
+        
+        #TODO : if you want to dump the response bodies, uncomment the following line
+        # _log.debug("response body:%s" % self.bytes)
 
 
         # augment self.response
